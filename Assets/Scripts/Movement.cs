@@ -40,6 +40,8 @@ public class Movement : MonoBehaviour
     public ParticleSystem jumpParticle;
     public ParticleSystem wallJumpParticle;
     public ParticleSystem slideParticle;
+    public AudioSource jumpSound1;
+    public AudioSource dashSound1;
 
     // Start is called before the first frame update
     void Start()
@@ -58,12 +60,14 @@ public class Movement : MonoBehaviour
         float yRaw = Input.GetAxisRaw("Vertical");
         Vector2 dir = new Vector2(x, y);
 
-        if (GetComponent<ToggleMovement>().originalMovement == true){
-            Debug.Log("Hi hi");
-        }
 
         Walk(dir);
         anim.SetHorizontalMovement(x, y, rb.velocity.y);
+
+        // example of how to use toggle movement script
+        if (GetComponent<ToggleMovement>().originalMovement == true){
+            Debug.Log("Hi hi");
+        }
 
         if (coll.onWall && Input.GetButton("Fire3") && canMove)
         {
@@ -102,10 +106,22 @@ public class Movement : MonoBehaviour
 
         if(coll.onWall && !coll.onGround)
         {
+            // flip animation side
+            if(coll.wallSide != side){
+                anim.Flip(side * -1);
+            }
+            
             if (x != 0 && !wallGrab)
             {
                 wallSlide = true;
-                WallSlide();
+                // if polished movement is set to true 
+                if (GetComponent<ToggleMovement>().polishedMovement == true) {
+                    if ( rb.velocity.y < 0) {
+                        WallSlide();
+                    }
+                } else { // else do original functionality
+                    WallSlide();
+                }
             }
         }
 
@@ -183,6 +199,10 @@ public class Movement : MonoBehaviour
 
         rb.velocity += dir.normalized * dashSpeed;
         StartCoroutine(DashWait());
+
+        if (GetComponent<ToggleMovement>().polishedMovement == true) {
+            dashSound1.Play();
+        }
     }
 
     IEnumerator DashWait()
@@ -274,6 +294,10 @@ public class Movement : MonoBehaviour
 
         rb.velocity = new Vector2(rb.velocity.x, 0);
         rb.velocity += dir * jumpForce;
+        
+        if (GetComponent<ToggleMovement>().polishedMovement == true) {
+            jumpSound1.Play();
+        }
 
         particle.Play();
     }

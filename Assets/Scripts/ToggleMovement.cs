@@ -8,6 +8,7 @@ public class ToggleMovement : MonoBehaviour
     public bool originalMovement;
     public bool polishedMovement;
     public bool distinctMovement;
+    public AudioSource toggleSound;
 
     // inititialize the array of movement types to with only one set to true
     private bool[] movementTypes = {true, false, false};
@@ -28,6 +29,7 @@ public class ToggleMovement : MonoBehaviour
         // if "t" key is pressed then toggle the movement type
         if (Input.GetButtonDown("ToggleMovement")) {
             toggle();
+            toggleSound.Play();
         }
     }
 
