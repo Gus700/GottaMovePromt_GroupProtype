@@ -10,7 +10,7 @@ public class ToggleMovement : MonoBehaviour
     public bool distinctMovement;
 
     // inititialize the array of movement types to with only one set to true
-    private bool[] movementTypes = {true, false, true};
+    private bool[] movementTypes = {true, false, false};
 
     // Start is called before the first frame update
     void Start()
