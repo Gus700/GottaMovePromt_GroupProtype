@@ -58,6 +58,10 @@ public class Movement : MonoBehaviour
         float yRaw = Input.GetAxisRaw("Vertical");
         Vector2 dir = new Vector2(x, y);
 
+        if (GetComponent<ToggleMovement>().originalMovement == true){
+            Debug.Log("Hi hi");
+        }
+
         Walk(dir);
         anim.SetHorizontalMovement(x, y, rb.velocity.y);
 
