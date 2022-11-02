@@ -13,10 +13,14 @@ public class ToggleMovement : MonoBehaviour
     // inititialize the array of movement types to with only one set to true
     private bool[] movementTypes = {true, false, false};
 
+    // save polished camera for polished ripple effect
+    [SerializeField] GameObject mainCam;
+    [SerializeField] GameObject polishedCam;
+
     // Start is called before the first frame update
     void Start()
     {
-
+        polishedCam.SetActive(false);
     }
 
     // Update is called once per frame
@@ -46,5 +50,23 @@ public class ToggleMovement : MonoBehaviour
                 break;
             }
         }
+
+        CameraToggle(); // toggles to polished camera when in polished mode
     }
+
+    void CameraToggle()
+    {
+        if (movementTypes[1])
+        {
+            mainCam.SetActive(false);
+            polishedCam.SetActive(true);
+        }
+        else
+        {
+            mainCam.SetActive(true);
+            polishedCam.SetActive(false);
+        }
+    }
+
+    public bool isPolished() { return movementTypes[1]; }
 }

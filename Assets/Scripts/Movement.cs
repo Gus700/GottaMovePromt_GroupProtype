@@ -43,12 +43,24 @@ public class Movement : MonoBehaviour
     public AudioSource jumpSound1;
     public AudioSource dashSound1;
 
+    [Space]
+    [Header("Cameras")]
+    [SerializeField] GameObject mainCam;
+    [SerializeField] GameObject polishedCam;
+    private Camera mc;
+    private Camera pc;
+    private ToggleMovement tm;
+
     // Start is called before the first frame update
     void Start()
     {
         coll = GetComponent<Collision>();
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponentInChildren<AnimationScript>();
+
+        mc = mainCam.GetComponent<Camera>();
+        pc = polishedCam.GetComponent<Camera>();
+        tm = GetComponent<ToggleMovement>();
     }
 
     // Update is called once per frame
@@ -210,9 +222,23 @@ public class Movement : MonoBehaviour
 
     private void Dash(float x, float y)
     {
-        Camera.main.transform.DOComplete();
+        // SCREEN SHAKE - Justin
+        if (tm.isPolished())
+        {
+            pc.transform.DOComplete();
+            pc.transform.DOShakePosition(.2f, .15f, 14, 90, false, true);
+            FindObjectOfType<RippleEffect>().Emit(pc.WorldToViewportPoint(transform.position));
+        }
+        else
+        {
+            mc.transform.DOComplete();
+            mc.transform.DOShakePosition(.2f, .5f, 14, 90, false, true);
+            FindObjectOfType<RippleEffect>().Emit(mc.WorldToViewportPoint(transform.position));
+        }
+
+        /*Camera.main.transform.DOComplete();
         Camera.main.transform.DOShakePosition(.2f, .5f, 14, 90, false, true);
-        FindObjectOfType<RippleEffect>().Emit(Camera.main.WorldToViewportPoint(transform.position));
+        FindObjectOfType<RippleEffect>().Emit(Camera.main.WorldToViewportPoint(transform.position));*/
 
         hasDashed = true;
 
