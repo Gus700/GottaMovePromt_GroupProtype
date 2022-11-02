@@ -70,7 +70,7 @@ public class Movement : MonoBehaviour
         Walk(dir);
         anim.SetHorizontalMovement(x, y, rb.velocity.y);
 
-        // example of how to use toggle movement script
+        // example of how to use toggle movement script - Gus
         if (GetComponent<ToggleMovement>().originalMovement == true){
             Debug.Log("Hi hi");
         }
@@ -112,7 +112,7 @@ public class Movement : MonoBehaviour
 
         if(coll.onWall && !coll.onGround)
         {
-            // flip animation side
+            // flip animation side - Gus
             if(coll.wallSide != side){
                 anim.Flip(side * -1);
             }
@@ -120,12 +120,12 @@ public class Movement : MonoBehaviour
             if (x != 0 && !wallGrab)
             {
                 wallSlide = true;
-                // if polished movement is set to true 
+                // if polished movement is set to true - Gus
                 if (GetComponent<ToggleMovement>().polishedMovement == true) {
                     if ( rb.velocity.y < 0) {
                         WallSlide();
                     }
-                } else { // else do original functionality
+                } else { // else do original functionality - Gus
                     WallSlide();
                 }
             }
@@ -281,10 +281,14 @@ public class Movement : MonoBehaviour
         // Implementation of Vivian Zheng's Bigger Wall Jump
         if(GetComponent<ToggleMovement>().polishedMovement == true){
             Jump((Vector2.up / 1f + wallDir / 1.25f), true);
-        }
+        } 
         // Original Code
         else{
             Jump((Vector2.up / 1.5f + wallDir / 1.5f), true);
+        }
+        // Justin's implementation of tighter control and velocity after wall jump
+        if (GetComponent<ToggleMovement>().distinctMovement == true) {
+            rb.velocity *= new Vector2(0.5f, 1.6f);
         }
 
         wallJumped = true;
