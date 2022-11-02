@@ -55,6 +55,12 @@ public class Movement : MonoBehaviour
     void Update()
     {
         float x = Input.GetAxis("Horizontal");
+
+        // Makes controls feel less slippery - Em
+        if (GetComponent<ToggleMovement>().polishedMovement == true) {
+            x = Input.GetAxis("HorizontalFixed");
+        }
+
         float y = Input.GetAxis("Vertical");
         float xRaw = Input.GetAxisRaw("Horizontal");
         float yRaw = Input.GetAxisRaw("Vertical");
@@ -140,8 +146,26 @@ public class Movement : MonoBehaviour
 
         if (Input.GetButtonDown("Fire1") && !hasDashed)
         {
-            if(xRaw != 0 || yRaw != 0)
-                Dash(xRaw, yRaw);
+            // Allows the player to perform a horizontal dash in whichever direction they 
+            // are facing if they press the dash button while not holding a direction - Em
+            if(GetComponent<ToggleMovement>().polishedMovement == true){
+                if(xRaw != 0 || yRaw != 0)
+                    Dash(xRaw, yRaw);
+                else if (xRaw == 0 && yRaw == 0){
+                    if (side == 1){
+                        Dash(1, 0);
+                    }
+                    else if (side == -1){
+                        Dash(-1, 0);
+                    }
+                }
+            }
+            // if the toggle is off, runs the original code
+            else{
+                if(xRaw != 0 || yRaw != 0)
+                    Dash(xRaw, yRaw);
+            }
+
         }
 
         if (coll.onGround && !groundTouch)
@@ -209,7 +233,15 @@ public class Movement : MonoBehaviour
     {
         FindObjectOfType<GhostTrail>().ShowGhost();
         StartCoroutine(GroundDash());
-        DOVirtual.Float(14, 0, .8f, RigidbodyDrag);
+
+        // Dash goes slightly farther - Em
+        if(GetComponent<ToggleMovement>().polishedMovement == true){
+            DOVirtual.Float(11, 0, .8f, RigidbodyDrag);
+        }
+        // Original code
+        else{
+            DOVirtual.Float(14, 0, .8f, RigidbodyDrag);
+        }
 
         dashParticle.Play();
         rb.gravityScale = 0;
@@ -246,7 +278,14 @@ public class Movement : MonoBehaviour
 
         Vector2 wallDir = coll.onRightWall ? Vector2.left : Vector2.right;
 
-        Jump((Vector2.up / 1.5f + wallDir / 1.5f), true);
+        // Implementation of Vivian Zheng's Bigger Wall Jump
+        if(GetComponent<ToggleMovement>().polishedMovement == true){
+            Jump((Vector2.up / 1f + wallDir / 1.25f), true);
+        }
+        // Original Code
+        else{
+            Jump((Vector2.up / 1.5f + wallDir / 1.5f), true);
+        }
 
         wallJumped = true;
     }
