@@ -18,6 +18,8 @@ public class Movement : MonoBehaviour
     public float slideSpeed = 5;
     public float wallJumpLerp = 10;
     public float dashSpeed = 20;
+    // counter for jump charge time in the distinct style
+    public float counter = 1;
 
     [Space]
     [Header("Booleans")]
@@ -26,6 +28,7 @@ public class Movement : MonoBehaviour
     public bool wallJumped;
     public bool wallSlide;
     public bool isDashing;
+    public bool charging;
 
     [Space]
 
@@ -146,14 +149,41 @@ public class Movement : MonoBehaviour
         if (!coll.onWall || coll.onGround)
             wallSlide = false;
 
-        if (Input.GetButtonDown("Jump"))
-        {
-            anim.SetTrigger("jump");
+        // Code for the chargeable jump in the distinct movement
+        // To charge a jump, hold the space bar - Em
+        if (tm.isDistinct()){
+            if (Input.GetKey(KeyCode.Space)){
+                counter += Time.deltaTime;
+            }
+            if (coll.onGround){
+                if (Input.GetKeyUp(KeyCode.Space)){
+                    anim.SetTrigger("jump");
+                    if (counter >= 2f){
+                        counter = 2f;
+                    }
+                    rb.velocity = new Vector2(rb.velocity.x, jumpForce * 1.25f * counter);
+                    counter = 1;
+                }
+                    
+            }
+            if (coll.onWall && !coll.onGround){
+                if (Input.GetButtonDown("Jump")){
+                    WallJump();
+                    counter = 1;
+                }
+            }            
+        }
+        // Original Jump code
+        else{
+            if (Input.GetButtonDown("Jump"))
+            {
+                anim.SetTrigger("jump");
 
-            if (coll.onGround)
-                Jump(Vector2.up, false);
-            if (coll.onWall && !coll.onGround)
-                WallJump();
+                if (coll.onGround)
+                    Jump(Vector2.up, false);
+                if (coll.onWall && !coll.onGround)
+                    WallJump();
+            }
         }
 
         if (Input.GetButtonDown("Fire1") && !hasDashed)
