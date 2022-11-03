@@ -69,4 +69,5 @@ public class ToggleMovement : MonoBehaviour
     }
 
     public bool isPolished() { return movementTypes[1]; }
+    public bool isDistinct() { return movementTypes[2]; }
 }

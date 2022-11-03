@@ -69,7 +69,7 @@ public class Movement : MonoBehaviour
         float x = Input.GetAxis("Horizontal");
 
         // Makes controls feel less slippery - Em
-        if (GetComponent<ToggleMovement>().polishedMovement == true) {
+        if (tm.isPolished() || tm.isDistinct()) {
             x = Input.GetAxis("HorizontalFixed");
         }
 
@@ -133,7 +133,7 @@ public class Movement : MonoBehaviour
             {
                 wallSlide = true;
                 // if polished movement is set to true - Gus
-                if (GetComponent<ToggleMovement>().polishedMovement == true) {
+                if(tm.isPolished() || tm.isDistinct()) {
                     if ( rb.velocity.y < 0) {
                         WallSlide();
                     }
@@ -160,7 +160,7 @@ public class Movement : MonoBehaviour
         {
             // Allows the player to perform a horizontal dash in whichever direction they 
             // are facing if they press the dash button while not holding a direction - Em
-            if(GetComponent<ToggleMovement>().polishedMovement == true){
+            if(tm.isPolished() || tm.isDistinct()){
                 if(xRaw != 0 || yRaw != 0)
                     Dash(xRaw, yRaw);
                 else if (xRaw == 0 && yRaw == 0){
@@ -223,7 +223,7 @@ public class Movement : MonoBehaviour
     private void Dash(float x, float y)
     {
         // SCREEN SHAKE - Justin
-        if (tm.isPolished())
+        if (tm.isPolished() || tm.isDistinct())
         {
             pc.transform.DOComplete();
             pc.transform.DOShakePosition(.2f, .15f, 14, 90, false, true);
@@ -250,7 +250,7 @@ public class Movement : MonoBehaviour
         rb.velocity += dir.normalized * dashSpeed;
         StartCoroutine(DashWait());
 
-        if (GetComponent<ToggleMovement>().polishedMovement == true) {
+        if (tm.isPolished() || tm.isDistinct()) {
             dashSound1.Play();
         }
     }
@@ -260,9 +260,13 @@ public class Movement : MonoBehaviour
         FindObjectOfType<GhostTrail>().ShowGhost();
         StartCoroutine(GroundDash());
 
-        // Dash goes slightly farther - Em
-        if(GetComponent<ToggleMovement>().polishedMovement == true){
+        // Dash goes slightly farther in polished movement - Em
+        if(tm.isPolished()){
             DOVirtual.Float(11, 0, .8f, RigidbodyDrag);
+        }
+        // Dash doesn't go as far in distinct movement - Em
+        else if (tm.isDistinct()){
+            DOVirtual.Float(16, 0, .8f, RigidbodyDrag);
         }
         // Original code
         else{
@@ -305,18 +309,15 @@ public class Movement : MonoBehaviour
         Vector2 wallDir = coll.onRightWall ? Vector2.left : Vector2.right;
 
         // Implementation of Vivian Zheng's Bigger Wall Jump
-        if(GetComponent<ToggleMovement>().polishedMovement == true){
-            Jump((Vector2.up / 1f + wallDir / 1.25f), true);
+        if (tm.isPolished() || tm.isDistinct()){
+            Jump((Vector2.up / 1.25f + wallDir / 1.25f), true);
+            // Justin's implementation of tighter control and velocity after wall jump
+            rb.velocity *= new Vector2(0.75f, 1.4f);
         } 
         // Original Code
         else{
             Jump((Vector2.up / 1.5f + wallDir / 1.5f), true);
         }
-        // Justin's implementation of tighter control and velocity after wall jump
-        if (GetComponent<ToggleMovement>().distinctMovement == true) {
-            rb.velocity *= new Vector2(0.5f, 1.6f);
-        }
-
         wallJumped = true;
     }
 
@@ -348,7 +349,13 @@ public class Movement : MonoBehaviour
 
         if (!wallJumped)
         {
-            rb.velocity = new Vector2(dir.x * speed, rb.velocity.y);
+            // Walk Speed is slower for distinct movement - Em
+            if (tm.isDistinct()){
+                rb.velocity = new Vector2(dir.x * 5, rb.velocity.y);
+            }
+            else{
+                rb.velocity = new Vector2(dir.x * speed, rb.velocity.y);
+            }  
         }
         else
         {
@@ -362,9 +369,15 @@ public class Movement : MonoBehaviour
         ParticleSystem particle = wall ? wallJumpParticle : jumpParticle;
 
         rb.velocity = new Vector2(rb.velocity.x, 0);
-        rb.velocity += dir * jumpForce;
-        
-        if (GetComponent<ToggleMovement>().polishedMovement == true) {
+        // Distinct Movement has a heavier jump
+        if (tm.isDistinct()){
+            rb.velocity += dir * 9;
+        }
+        else{
+            rb.velocity += dir * jumpForce;
+        }
+        // Polished and Distinct Movement plays a jump sound
+        if (tm.isPolished() || tm.isDistinct()) {
             jumpSound1.Play();
         }
 
