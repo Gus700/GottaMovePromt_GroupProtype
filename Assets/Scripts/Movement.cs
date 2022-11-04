@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using Cinemachine;
 
 public class Movement : MonoBehaviour
 {
@@ -54,6 +55,10 @@ public class Movement : MonoBehaviour
     private Camera pc;
     private ToggleMovement tm;
 
+    [Space]
+    [Header("Cinemachine")]
+    [SerializeField] CinemachineVirtualCamera cvc;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -64,6 +69,8 @@ public class Movement : MonoBehaviour
         mc = mainCam.GetComponent<Camera>();
         pc = polishedCam.GetComponent<Camera>();
         tm = GetComponent<ToggleMovement>();
+
+
     }
 
     // Update is called once per frame
@@ -87,7 +94,7 @@ public class Movement : MonoBehaviour
 
         // example of how to use toggle movement script - Gus
         if (GetComponent<ToggleMovement>().originalMovement == true){
-            Debug.Log("Hi hi");
+            //Debug.Log("Hi hi");
         }
 
         if (coll.onWall && Input.GetButton("Fire3") && canMove)
@@ -256,12 +263,15 @@ public class Movement : MonoBehaviour
         // SCREEN SHAKE - Justin
         if (tm.isPolished() || tm.isDistinct())
         {
+            cvc.GetComponent<CinemachineShake>().ShakeCamera(3f, .1f);
             pc.transform.DOComplete();
             pc.transform.DOShakePosition(.2f, .15f, 14, 90, false, true);
             FindObjectOfType<RippleEffect>().Emit(pc.WorldToViewportPoint(transform.position));
         }
         else
         {
+            cvc.GetComponent<CinemachineShake>().ShakeCamera(6f, .1f);
+            
             mc.transform.DOComplete();
             mc.transform.DOShakePosition(.2f, .5f, 14, 90, false, true);
             FindObjectOfType<RippleEffect>().Emit(mc.WorldToViewportPoint(transform.position));

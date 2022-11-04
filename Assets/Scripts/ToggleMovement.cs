@@ -20,6 +20,7 @@ public class ToggleMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        polishedCam.GetComponent<AudioListener>().enabled = false;
         polishedCam.SetActive(false);
     }
 
@@ -56,15 +57,19 @@ public class ToggleMovement : MonoBehaviour
 
     void CameraToggle()
     {
-        if (movementTypes[1])
+        if (movementTypes[1] || movementTypes[2])
         {
+            mainCam.GetComponent<AudioListener>().enabled = false;
             mainCam.SetActive(false);
+            polishedCam.GetComponent<AudioListener>().enabled = true;
             polishedCam.SetActive(true);
         }
         else
         {
             mainCam.SetActive(true);
+            mainCam.GetComponent<AudioListener>().enabled = true;
             polishedCam.SetActive(false);
+            polishedCam.GetComponent<AudioListener>().enabled = false;
         }
     }
 
