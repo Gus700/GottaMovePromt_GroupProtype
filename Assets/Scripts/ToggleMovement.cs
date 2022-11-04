@@ -28,10 +28,10 @@ public class ToggleMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!isPolished() && !isDistinct() && backGroundMusic.isPlaying) {
-            StartCoroutine(FadeAudioSource.StartFade(backGroundMusic, 1f, 0f));
-        } else if (isPolished() && backGroundMusic.isPlaying) {
-            StartCoroutine(FadeAudioSource.StartFade(backGroundMusic, 1f, 1f));
+        if (!isPolished() && !isDistinct() && backGroundMusic.isPlaying && (backGroundMusic.volume == 1f)) {
+            StartCoroutine(FadeAudioSource.StartFade(backGroundMusic, 1f, 0.0f));
+        } else if (isPolished() && (backGroundMusic.volume == 0f)) {
+            StartCoroutine(FadeAudioSource.StartFade(backGroundMusic, 1f, 1.0f));
         }
         // keep public values updated based on movementTypes array
         originalMovement = movementTypes[0];
@@ -49,6 +49,7 @@ public class ToggleMovement : MonoBehaviour
                 // StartCoroutine(FadeAudioSource.StartFade(backGroundMusic, 2f, 1f));
             }
         }
+        Debug.Log(backGroundMusic.volume);
     }
 
     // toggles which element in the array is set to true in the private array, movementTypes
@@ -92,7 +93,7 @@ public class ToggleMovement : MonoBehaviour
         // taken from 
     //https://johnleonardfrench.com/how-to-fade-audio-in-unity-i-tested-every-method-this-ones-the-best/#:~:text=You%20can%20fade%20audio%20in,script%20will%20do%20the%20rest. 
     public static class FadeAudioSource {
-    public static IEnumerator StartFade(AudioSource audioSource, float duration, float targetVolume)
+        public static IEnumerator StartFade(AudioSource audioSource, float duration, float targetVolume)
         {
             float currentTime = 0;
             float start = audioSource.volume;
