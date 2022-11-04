@@ -158,6 +158,7 @@ public class Movement : MonoBehaviour
             if (coll.onGround){
                 if (Input.GetKeyUp(KeyCode.Space)){
                     anim.SetTrigger("jump");
+                    jumpSound1.Play();
                     if (counter >= 2f){
                         counter = 2f;
                     }
