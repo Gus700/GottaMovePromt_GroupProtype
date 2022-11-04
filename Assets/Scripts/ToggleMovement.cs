@@ -9,6 +9,7 @@ public class ToggleMovement : MonoBehaviour
     public bool polishedMovement;
     public bool distinctMovement;
     public AudioSource toggleSound;
+    public AudioSource backGroundMusic;
 
     // inititialize the array of movement types to with only one set to true
     private bool[] movementTypes = {true, false, false};
@@ -27,6 +28,11 @@ public class ToggleMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!isPolished() && !isDistinct() && backGroundMusic.isPlaying) {
+            StartCoroutine(FadeAudioSource.StartFade(backGroundMusic, 1f, 0f));
+        } else if (isPolished() && backGroundMusic.isPlaying) {
+            StartCoroutine(FadeAudioSource.StartFade(backGroundMusic, 1f, 1f));
+        }
         // keep public values updated based on movementTypes array
         originalMovement = movementTypes[0];
         polishedMovement = movementTypes[1];
@@ -35,6 +41,13 @@ public class ToggleMovement : MonoBehaviour
         if (Input.GetButtonDown("ToggleMovement")) {
             toggle();
             toggleSound.Play();
+            // if background music is not playing then start music
+            if (!backGroundMusic.isPlaying) {
+                Debug.Log("musing starting");
+                backGroundMusic.Play();
+                //backGroundMusic.volume = 0f;
+                // StartCoroutine(FadeAudioSource.StartFade(backGroundMusic, 2f, 1f));
+            }
         }
     }
 
@@ -75,4 +88,21 @@ public class ToggleMovement : MonoBehaviour
 
     public bool isPolished() { return movementTypes[1]; }
     public bool isDistinct() { return movementTypes[2]; }
+
+        // taken from 
+    //https://johnleonardfrench.com/how-to-fade-audio-in-unity-i-tested-every-method-this-ones-the-best/#:~:text=You%20can%20fade%20audio%20in,script%20will%20do%20the%20rest. 
+    public static class FadeAudioSource {
+    public static IEnumerator StartFade(AudioSource audioSource, float duration, float targetVolume)
+        {
+            float currentTime = 0;
+            float start = audioSource.volume;
+            while (currentTime < duration)
+            {
+                currentTime += Time.deltaTime;
+                audioSource.volume = Mathf.Lerp(start, targetVolume, currentTime / duration);
+                yield return null;
+            }
+            yield break;
+        }
+    }
 }
