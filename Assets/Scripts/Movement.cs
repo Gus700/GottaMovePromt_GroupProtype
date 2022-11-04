@@ -270,7 +270,7 @@ public class Movement : MonoBehaviour
         }
         else
         {
-            cvc.GetComponent<CinemachineShake>().ShakeCamera(6f, .1f);
+            cvc.GetComponent<CinemachineShake>().ShakeCamera(8f, .1f);
             
             mc.transform.DOComplete();
             mc.transform.DOShakePosition(.2f, .5f, 14, 90, false, true);
